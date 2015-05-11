@@ -31,39 +31,71 @@ vm = prov.vm
 	:authorization => "Basic #{Base64.strict_encode64("#{foreman_user}:#{foreman_password}")}"
 }
 
-def query_id (query,name)
-	uri = "#{@uri_base}/#{query}?search=#{name}"
-	$evm.log("info", "uri => #{uri}")
+def query_id (queryuri,queryfield,querycontent)
+	# queryuri: path name related to @uri_base, where to search (hostgroups, locations, ...)
+	# queryfield: which field (as in database row) should be searched
+	# querycontent: what the queryfield has to match (exact match)
+
+	# Put the search URL together
+	url = URI.escape("#{@uri_base}/#{queryuri}?search=#{queryfield}=\"#{querycontent}\"")
+	
+	$evm.log("info", "url => #{url}")
 
 	request = RestClient::Request.new(
 		method: :get,
-		url: uri,
+		url: url,
 		headers: @headers,
 		verify_ssl: OpenSSL::SSL::VERIFY_NONE
 	)
 
 	rest_result = request.execute
 	json_parse = JSON.parse(rest_result)
-	id = json_parse['results'][0]['id'].to_s
+	
+	# The subtotal value is the number of matching results.
+	# If it is higher than one, the query got no unique result!
+	subtotal = json_parse['subtotal'].to_i
+	
+	if subtotal == 0
+		$evm.log("info", "query failed, no result #{url}")
+		return -1
+	elsif subtotal == 1
+		id = json_parse['results'][0]['id'].to_s
+		return id
+	elsif subtotal > 1
+		$evm.log("info", "query failed, more than one result #{url}")
+		return -1
+	end
 
-	return id
+	$evm.log("info", "query failed, unknown condition #{url}")
+	return -1
 end
 
 # Get the hostgroup id using the supplied name
 $evm.log("info", 'Getting hostgroup id from Foreman')
-hostgroup_id=query_id("hostgroups",hostgroup_name)
+hostgroup_id=query_id("hostgroups","name",hostgroup_name)
 $evm.log("info", "hostgroup_id: #{hostgroup_id}")
+if hostgroup_id == -1
+	$evm.log("info", "Cannot continue without hostgroup_id")
+	exit MIQ_ERROR
+end
 
 # Get the location id using the supplied name
 $evm.log("info", 'Getting location id from Foreman')
-location_id=query_id("locations",location_name)
+location_id=query_id("locations","name",location_name)
 $evm.log("info", "location_id: #{location_id}")
+if location_id == -1
+	$evm.log("info", "Cannot continue without location_id")
+	exit MIQ_ERROR
+end
 
 # Get the organization id using the supplied name
 $evm.log("info", 'Getting organization id from Foreman')
-organization_id=query_id("organizations",organization_name)
+organization_id=query_id("organizations","name",organization_name)
 $evm.log("info", "organization_id: #{organization_id}")
-
+if organization_id == -1
+	$evm.log("info", "Cannot continue without organization_id")
+	exit MIQ_ERROR
+end
 
 # Create the host via Foreman
 uri = "#{@uri_base}"
