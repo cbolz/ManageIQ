@@ -76,7 +76,7 @@ hostgroup_id=query_id("hostgroups","name",hostgroup_name)
 $evm.log("info", "hostgroup_id: #{hostgroup_id}")
 if hostgroup_id == -1
 	$evm.log("info", "Cannot continue without hostgroup_id")
-	exit MIQ_ERROR
+	exit MIQ_ABORT
 end
 
 # Get the location id using the supplied name
@@ -85,7 +85,7 @@ location_id=query_id("locations","name",location_name)
 $evm.log("info", "location_id: #{location_id}")
 if location_id == -1
 	$evm.log("info", "Cannot continue without location_id")
-	exit MIQ_ERROR
+	exit MIQ_ABORT
 end
 
 # Get the organization id using the supplied name
@@ -94,7 +94,7 @@ organization_id=query_id("organizations","name",organization_name)
 $evm.log("info", "organization_id: #{organization_id}")
 if organization_id == -1
 	$evm.log("info", "Cannot continue without organization_id")
-	exit MIQ_ERROR
+	exit MIQ_ABORT
 end
 
 # Create the host via Foreman
