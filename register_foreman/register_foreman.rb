@@ -124,6 +124,12 @@ request = RestClient::Request.new(
 rest_result = request.execute
 $evm.log("info", "return code => <#{rest_result.code}>")
 
+json_parse = JSON.parse(rest_result)
+hostid = json_parse['id'].to_s
+
+$evm.log("info", "Storing Foreman host ID of new VM: #{hostid}")
+prov.set_option(:hostid,hostid)
+
 $evm.log("info", "Powering on VM")
 vm.start
 
