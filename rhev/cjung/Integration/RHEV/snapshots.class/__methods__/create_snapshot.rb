@@ -21,8 +21,7 @@ end
 
 $evm.log("info", "Begin Automate Method")
 
-provider_id = $evm.root['vm'].ext_management_system.id
-ext_mgt_system = $evm.vmdb('ext_management_system').find_by_id(provider_id)
+ext_mgt_system = $evm.root['vm'].ext_management_system.id
 
 $evm.log("info", "Got ext_management_system #{ext_mgt_system.name}")
 
