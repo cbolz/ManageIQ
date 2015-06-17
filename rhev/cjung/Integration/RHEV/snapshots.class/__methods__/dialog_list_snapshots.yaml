@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: dialog_list_snapshots
+    display_name: dialog_list_snapshots
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []

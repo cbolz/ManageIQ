@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: revert_snapshot
+    display_name: revert_snapshot
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []
