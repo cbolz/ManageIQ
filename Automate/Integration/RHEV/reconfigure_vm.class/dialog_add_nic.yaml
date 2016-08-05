@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: dialog_add_nic
+    name: dialog_add_nic
+    inherits: 
+    description: dialog_add_nic
+  fields:
+  - execute:
+      value: dialog_add_nic
