@@ -1,5 +1,6 @@
+###################################
 #
-#            Automate Method
+# This method creates an additional disk and attaches it to the VM
 #
 # Copyright (C) 2016, Christian Jung
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+#
+###################################
 
 def attachhd(rhevmhost,rhevmuser,rhevmpass,vmuid,storage,size,allocpolicy)
   require 'rubygems'

@@ -1,5 +1,6 @@
+###################################
 #
-#            Automate Method
+# This method returns the list of data stores to be used in a dynamic drop down list
 #
 # Copyright (C) 2016, Christian Jung
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+#
+###################################
 def getstorages(rhevmhost,rhevmuser,rhevmpass)
   require 'rubygems'
   require 'rest_client'

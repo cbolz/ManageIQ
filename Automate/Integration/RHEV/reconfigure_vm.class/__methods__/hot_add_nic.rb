@@ -1,5 +1,6 @@
+###################################
 #
-#            Automate Method
+# This method creates an additional network interface and attaches it to the VM
 #
 # Copyright (C) 2016, Christian Jung
 # This program is free software: you can redistribute it and/or modify
@@ -14,43 +15,48 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+###################################
+
+def getprofileid(rhevmhost,rhevmuser,rhevmpass,networkid)
+  require 'rubygems'
+  require 'rest_client'
+  require 'nokogiri'
+
+  $evm.log("info", "#{@method} - Retrieve Profile ID for Network ID: #{networkid}")
+
+  resource = RestClient::Resource.new(rhevmhost, :user => rhevmuser, :password => rhevmpass, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
+  profile_id = Nokogiri::XML(resource["/api/networks/" + networkid + "/vnicprofiles/"].get.body)
+  id = profile_id.xpath("//vnic_profile").attr('id')
+  return id
+end
 
 def attachnic(rhevmhost,rhevmuser,rhevmpass,vmuid,networkid,nicname)
   require 'rubygems'
   require 'rest_client'
-  require 'xmlsimple'
+  require 'nokogiri'
 
-  htmlhd = "<nic><vnic_profile>#{networkid}</vnic_profile><name>#{nicname}</name></nic>"
+  profile_id = getprofileid(rhevmhost,rhevmuser,rhevmpass,networkid)
 
-  $evm.log("info", "html = #{htmlhd}")
+  nicdata = "<nic><vnic_profile>#{profile_id}</vnic_profile><name>#{nicname}</name></nic>"
+
+  $evm.log("info", "#{@method} - html = #{nicdata}")
   resource = RestClient::Resource.new(rhevmhost, :user => rhevmuser, :password => rhevmpass, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
-  data = XmlSimple.xml_in(resource["/api/vms/" + vmuid + "/nics/"].post(htmlhd, :content_type => 'application/xml', :accept => 'application/xml').body, {'ForceArray' => false})
-  $evm.log("info", "Return: #{data.inspect}")
-  diskid = data['id']
-
-
-  # # Only needed for RHEV 3.3 - After Updating to 3.4 we dont need this anymore
-  # sleep(30)
-  #
-  # htmlactivatehd = "<action/>"
-  # $evm.log("info", "htmlactivatehd = #{htmlactivatehd}")
-  # resource = RestClient::Resource.new(rhevmhost, :user => rhevmuser, :password => rhevmpass, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
-  # data = XmlSimple.xml_in(resource["/api/vms/" + vmuid + "/disks/" + diskid + "/activate"].post(htmlactivatehd, :content_type => 'application/xml', :accept => 'application/xml').body, {'ForceArray' => false})
-  # # - - - - -
-  return data
+  Nokogiri::XML(resource["/api/vms/" + vmuid + "/nics/"].post(nicdata, :content_type => 'application/xml', :accept => 'application/xml').body)
+  return
 end
 
 begin
   @method = 'attachnic'
   $evm.log("info", "#{@method} - EVM Automate Method: <#{@method}> Started")
 
-  ext_mgt_system = $evm.root['vm'].ext_management_system
+  vm=$evm.root['vm']
+  ext_mgt_system = vm.ext_management_system
 
-  rhevmhost = "https://#{ext_mgt_system[:hostname]}"
+  rhevmhost = "https://#{ext_mgt_system.hostname}"
   rhevmuser = ext_mgt_system.authentication_userid
   rhevmpass = ext_mgt_system.authentication_password
 
-  vm=$evm.root['vm']
   vmuid=vm.uid_ems
   vmtype=vm.type
 
@@ -63,10 +69,8 @@ begin
   nicname = $evm.root['dialog_nicname']
   $evm.log("info", "#{@method} - network = #{networkid}")
   $evm.log("info", "#{@method} - vmuid = #{vmuid}")
-  $evm.log("info", "#{@emthod} - nic name: #{nicname}")
-  tmp=attachnic(rhevmhost,rhevmuser,rhevmpass,vmuid,networkid,nicname)
-
-  $evm.log("info", "#{@method} - tmp = #{tmp}")
+  $evm.log("info", "#{@method} - nic name: #{nicname}")
+  attachnic(rhevmhost,rhevmuser,rhevmpass,vmuid,networkid,nicname)
 
   #
   # Exit method
