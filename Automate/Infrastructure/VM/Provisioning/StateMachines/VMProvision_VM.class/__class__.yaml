@@ -213,10 +213,30 @@ object:
       max_time: 
   - field:
       aetype: state
-      name: RegisterForeman
+      name: CreateCobblerRecord
       display_name: 
       datatype: string
       priority: 11
+      owner: 
+      default_value: "/Integration/ConfigurationManagement/Cobbler/create_cobbler_record"
+      substitute: true
+      message: create
+      visibility: 
+      collect: 
+      scope: 
+      description: 
+      condition: 
+      on_entry: 
+      on_exit: 
+      on_error: 
+      max_retries: 
+      max_time: 
+  - field:
+      aetype: state
+      name: RegisterForeman
+      display_name: 
+      datatype: string
+      priority: 12
       owner: 
       default_value: "/Integration/ConfigurationManagement/Foreman/register_foreman"
       substitute: true
@@ -236,7 +256,7 @@ object:
       name: PostProvision
       display_name: 
       datatype: string
-      priority: 12
+      priority: 13
       owner: 
       default_value: "/Infrastructure/VM/Provisioning/StateMachines/Methods/PostProvision#${/#miq_provision.source.vendor}"
       substitute: true
@@ -256,7 +276,7 @@ object:
       name: RegisterDHCP
       display_name: 
       datatype: string
-      priority: 13
+      priority: 14
       owner: 
       default_value: 
       substitute: true
@@ -276,7 +296,7 @@ object:
       name: ActivateCMDB
       display_name: 
       datatype: string
-      priority: 14
+      priority: 15
       owner: 
       default_value: 
       substitute: true
@@ -296,7 +316,7 @@ object:
       name: EmailOwner
       display_name: 
       datatype: string
-      priority: 15
+      priority: 16
       owner: 
       default_value: "/Infrastructure/VM/Provisioning/Email/MiqProvision_Complete?event=vm_provisioned"
       substitute: true
@@ -316,7 +336,7 @@ object:
       name: Finished
       display_name: 
       datatype: string
-      priority: 16
+      priority: 17
       owner: 
       default_value: "/System/CommonMethods/StateMachineMethods/vm_provision_finished"
       substitute: true

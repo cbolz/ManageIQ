@@ -1,0 +1,12 @@
+---
+object_type: instance
+version: 1.0
+object:
+  attributes:
+    display_name: create_cobbler_record
+    name: create_cobbler_record
+    inherits: 
+    description: create_cobbler_record
+  fields:
+  - execute:
+      value: " create_cobbler_record "

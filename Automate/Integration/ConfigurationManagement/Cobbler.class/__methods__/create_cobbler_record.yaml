@@ -1,0 +1,12 @@
+---
+object_type: method
+version: 1.0
+object:
+  attributes:
+    name: create_cobbler_record
+    display_name: " create_cobbler_record "
+    description: 
+    scope: instance
+    language: ruby
+    location: inline
+  inputs: []
