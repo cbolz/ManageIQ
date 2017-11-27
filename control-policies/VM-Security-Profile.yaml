@@ -1,0 +1,102 @@
+---
+- MiqPolicySet:
+    name: 908a3f34-af56-11e7-814f-2cc2605c21bc
+    description: VM Security Profile
+    set_type: MiqPolicySet
+    guid: 908a3f34-af56-11e7-814f-2cc2605c21bc
+    read_only: 
+    set_data: 
+    mode: 
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: 5ebfc018-af57-11e7-814f-2cc2605c21bc
+      description: Compliance Check after SSA
+      expression: 
+      towhat: Vm
+      guid: 5ebfc018-af57-11e7-814f-2cc2605c21bc
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: control
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: success
+        success_sequence: 1
+        success_synchronous: true
+        MiqEventDefinition:
+          name: vm_scan_complete
+          description: VM Analysis Complete
+          guid: abc6272a-dd94-11e6-8457-2cc2605deca5
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: check_compliance
+          description: Check Host or VM Compliance
+          guid: a9ffc626-dd94-11e6-8457-2cc2605deca5
+          action_type: default
+          options: {}
+      Condition: []
+    - name: 0cb1b5d4-af56-11e7-814f-2cc2605c21bc
+      description: SELinux set to Enforcing
+      expression: !ruby/object:MiqExpression
+        exp:
+          "=":
+            field: Vm-platform
+            value: linux
+        context_type: 
+      towhat: Vm
+      guid: 0cb1b5d4-af56-11e7-814f-2cc2605c21bc
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        failure_synchronous: true
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: 42b1bd96-317e-11e3-88e1-005056b80000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      Condition:
+      - name: 7ed12992-af56-11e7-814f-2cc2605c21bc
+        description: SELinux is set to Enforcing
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            FIND:
+              search:
+                "=":
+                  field: Vm.filesystems-name
+                  value: "/etc/sysconfig/selinux"
+              checkall:
+                STARTS WITH:
+                  field: Vm.filesystems-contents
+                  value: SELINUX=enforcing
+          context_type: 
+        towhat: Vm
+        file_mtime: 
+        guid: 7ed12992-af56-11e7-814f-2cc2605c21bc
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 
+        notes: 
+        read_only: 
