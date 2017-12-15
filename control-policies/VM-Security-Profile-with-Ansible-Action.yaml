@@ -1,0 +1,170 @@
+---
+- MiqPolicySet:
+    name: 8977d230-9258-11e7-a7fb-2cc2605856f4
+    description: Security Profile
+    set_type: MiqPolicySet
+    guid: 8977d230-9258-11e7-a7fb-2cc2605856f4
+    read_only: 
+    set_data: 
+    mode: control
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: 4c0e0048-e0ac-11e7-a284-2cc2605c21bc
+      description: Check Compliance
+      expression: 
+      towhat: Vm
+      guid: 4c0e0048-e0ac-11e7-a284-2cc2605c21bc
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: control
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: success
+        success_sequence: 1
+        success_synchronous: true
+        MiqEventDefinition:
+          name: vm_scan_complete
+          description: VM Analysis Complete
+          guid: abc6272a-dd94-11e6-8457-2cc2605deca5
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: check_compliance
+          description: Check Host or VM Compliance
+          guid: a9ffc626-dd94-11e6-8457-2cc2605deca5
+          action_type: default
+          options: {}
+      Condition: []
+    - name: 73db1f88-9256-11e7-a7fb-2cc2605856f4
+      description: Check SELinux Policy
+      expression: 
+      towhat: Vm
+      guid: 73db1f88-9256-11e7-a7fb-2cc2605856f4
+      created_by: demo
+      updated_by: demo
+      notes: 
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        failure_synchronous: true
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: 42b1bd96-317e-11e3-88e1-005056b80000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      - qualifier: failure
+        failure_sequence: 2
+        failure_synchronous: true
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: 42b1bd96-317e-11e3-88e1-005056b80000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: 9a53b6be-e0aa-11e7-a284-2cc2605c21bc
+          description: Fix SELinux
+          guid: 9a53b6be-e0aa-11e7-a284-2cc2605c21bc
+          action_type: custom_automation
+          options:
+            :use_event_target: false
+            :use_localhost: true
+            :ae_message: create
+            :ae_request: ansible_tower_job
+            :ae_hash:
+              job_template_name: Fix SELinux
+      Condition:
+      - name: b047473a-9256-11e7-a7fb-2cc2605856f4
+        description: Check for Enforcing
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            FIND:
+              search:
+                "=":
+                  field: Vm.filesystems-name
+                  value: "/etc/sysconfig/selinux"
+              checkall:
+                STARTS WITH:
+                  field: Vm.filesystems-contents
+                  value: SELINUX=enforcing
+          context_type: 
+        towhat: Vm
+        file_mtime: 
+        guid: b047473a-9256-11e7-a7fb-2cc2605856f4
+        filename: 
+        applies_to_exp: !ruby/object:MiqExpression
+          exp:
+            "=":
+              field: Vm-platform
+              value: linux
+          context_type: 
+        miq_policy_id: 
+        notes: 
+        read_only: 
+    - name: b5c99a10-9255-11e7-a7fb-2cc2605856f4
+      description: Run SmartSate
+      expression: 
+      towhat: Vm
+      guid: b5c99a10-9255-11e7-a7fb-2cc2605856f4
+      created_by: demo
+      updated_by: demo
+      notes: 
+      active: true
+      mode: control
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: success
+        success_sequence: 1
+        MiqEventDefinition:
+          name: vm_start
+          description: VM Power On
+          guid: ab63fca8-dd94-11e6-8457-2cc2605deca5
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: vm_analyze
+          description: Initiate SmartState Analysis for VM
+          guid: a9ec4fba-dd94-11e6-8457-2cc2605deca5
+          action_type: default
+          options: {}
+      - qualifier: success
+        success_sequence: 1
+        MiqEventDefinition:
+          name: vm_reset
+          description: VM Reset
+          guid: ab70737a-dd94-11e6-8457-2cc2605deca5
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: vm_analyze
+          description: Initiate SmartState Analysis for VM
+          guid: a9ec4fba-dd94-11e6-8457-2cc2605deca5
+          action_type: default
+          options: {}
+      Condition: []
